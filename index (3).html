@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAEV/ Dev. | Desenvolvimento Web para PMEs</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            400: '#33ff88',
+                            500: '#00e65b', // Verde Neon Principal
+                            600: '#00c24d',
+                            glow: 'rgba(0, 230, 91, 0.15)'
+                        },
+                        dark: {
+                            900: '#050505', // Fundo principal
+                            800: '#0a0a0a', // Cards
+                            700: '#141414', // Bordas
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32V0H32' stroke='rgba(255, 255, 255, 0.04)' stroke-width='1'/%3E%3C/svg%3E\")",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Script do Lucide Icons corrigido via CDN estável -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #e4e4e7;
+            overflow-x: hidden;
+            selection-background-color: #00e65b;
+            selection-color: #000;
+        }
+
+        ::selection {
+            background: rgba(0, 230, 91, 0.3);
+            color: #fff;
+        }
+
+        .premium-card {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .premium-card:hover {
+            border-color: rgba(0, 230, 91, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px -10px rgba(0, 230, 91, 0.1);
+        }
+
+        .nav-blur {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 20px rgba(0, 230, 91, 0.4);
+        }
+
+        .btn-primary {
+            background: #00e65b;
+            color: #000;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 230, 91, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: #33ff88;
+            box-shadow: 0 0 25px rgba(0, 230, 91, 0.4);
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse-neon {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        .whatsapp-float {
+            animation: pulse-neon 2s infinite;
+        }
+
+        /* Classes para o FAQ */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen relative">
+
+    <div class="fixed inset-0 z-[-1] bg-grid-pattern pointer-events-none opacity-50"></div>
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-500/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
+
+    <script>
+        const WHATSAPP_NUMBER = "5511999999999"; 
+        const WHATSAPP_MESSAGE = encodeURIComponent("Olá! Gostaria de conversar sobre um projeto com a BAEV/ Dev.");
+        const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
+    </script>
+
+    <header class="fixed w-full nav-blur z-50 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <span class="text-2xl font-bold tracking-tighter text-white">
+                        BAEV<span class="text-brand-500 text-glow">/</span> Dev.
+                    </span>
+                </div>
+
+                <nav class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="#servicos" class="text-zinc-400 hover:text-white text-sm font-medium transition-colors">Serviços</a>
+                    <a href="#metodologia" class="text-zinc-400 hover:text-white text-sm font-medium transition-colors">Metodologia</a>
+                    <a href="#portfolio" class="text-zinc-400 hover:text-white text-sm font-medium transition-colors">Portfólio</a>
+                    <a href="#faq" class="text-zinc-400 hover:text-white text-sm font-medium transition-colors">FAQ</a>
+                    <a href="#" onclick="window.open(WHATSAPP_URL, '_blank')" class="text-sm font-medium text-white px-5 py-2.5 rounded-lg border border-white/10 hover:border-brand-500 hover:bg-brand-500/10 transition-all flex items-center gap-2">
+                        <i data-lucide="message-circle" class="w-4 h-4 text-brand-500"></i>
+                        Fale Conosco
+                    </a>
+                </nav>
+
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-zinc-400 hover:text-white focus:outline-none p-2">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-dark-900 border-t border-white/5 absolute w-full shadow-2xl">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#servicos" class="block px-3 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all">Serviços</a>
+                <a href="#metodologia" class="block px-3 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all">Metodologia</a>
+                <a href="#portfolio" class="block px-3 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all">Portfólio</a>
+                <a href="#faq" class="block px-3 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all">FAQ</a>
+                <a href="#" onclick="window.open(WHATSAPP_URL, '_blank')" class="block w-full text-center mt-4 btn-primary px-5 py-3 rounded-lg font-semibold flex justify-center items-center gap-2">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    Falar no WhatsApp
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-20">
+        
+        <section class="relative min-h-[90vh] flex items-center pt-20 pb-24 lg:pt-32 lg:pb-36 border-b border-white/5 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+                <div class="text-center max-w-4xl mx-auto">
+                    
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/5 mb-8">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse text-glow"></span>
+                        <span class="text-brand-400 text-xs font-semibold tracking-widest uppercase">Alta Performance Digital</span>
+                    </div>
+
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[1.1] mb-6 text-white">
+                        Tecnologia inteligente para <br class="hidden md:block">
+                        <span class="text-brand-500 text-glow">Pequenas e Médias</span>
+                    </h1>
+                    
+                    <p class="mt-6 text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+                        A <span class="font-semibold text-white">BAEV<span class="text-brand-500">/</span> Dev.</span> cria desde sites profissionais modernos até sistemas completos com gestão e implementação.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                        <a href="#" onclick="window.open(WHATSAPP_URL, '_blank')" class="w-full sm:w-auto btn-primary px-8 py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                            Orçamento Rápido
+                        </a>
+                        <a href="#portfolio" class="w-full sm:w-auto bg-transparent border border-white/10 text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/5 hover:border-white/20 transition-all flex items-center justify-center gap-2">
+                            Ver Portfólio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 border-b border-white/5 bg-dark-900 overflow-hidden relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="max-w-3xl mx-auto mb-10">
+                    <h2 class="text-brand-500 font-semibold tracking-widest uppercase text-xs mb-3">Nossa Stack de Tecnologia</h2>
+                    <h3 class="text-white text-2xl md:text-3xl font-bold tracking-tight mb-4">Construído para escalar sem limites</h3>
+                    <p class="text-zinc-400 text-base font-light leading-relaxed">
+                        Não usamos construtores amadores. Desenvolvemos a fundação do seu negócio digital utilizando as mesmas tecnologias adotadas pelas maiores empresas do mundo. Isso garante que seu projeto seja extremamente seguro, rode na velocidade da luz e esteja preparado para suportar o crescimento da sua empresa, sem gargalos de performance.
+                    </p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4 md:gap-6 opacity-80">
+                    <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-sm text-zinc-300 font-medium hover:bg-white/10 transition-colors"><i data-lucide="code-2" class="w-5 h-5 text-brand-500"></i> React / Next.js</div>
+                    <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-sm text-zinc-300 font-medium hover:bg-white/10 transition-colors"><i data-lucide="server" class="w-5 h-5 text-brand-500"></i> Node.js</div>
+                    <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-sm text-zinc-300 font-medium hover:bg-white/10 transition-colors"><i data-lucide="palette" class="w-5 h-5 text-brand-500"></i> Tailwind CSS</div>
+                    <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-sm text-zinc-300 font-medium hover:bg-white/10 transition-colors"><i data-lucide="database" class="w-5 h-5 text-brand-500"></i> Bancos SQL / NoSQL</div>
+                    <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-sm text-zinc-300 font-medium hover:bg-white/10 transition-colors"><i data-lucide="cloud" class="w-5 h-5 text-brand-500"></i> Infraestrutura AWS</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="portfolio" class="py-24 relative z-10 border-b border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-brand-500 font-semibold tracking-widest uppercase text-xs mb-3">Cases de Sucesso</h2>
+                    <h3 class="text-white text-3xl md:text-4xl font-bold tracking-tight mb-4">Projetos em Destaque</h3>
+                    <p class="text-zinc-400 text-lg font-light">Veja como resolvemos problemas complexos através de arquitetura inteligente e design focado na experiência do usuário.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Case 1 -->
+                    <div class="premium-card rounded-2xl overflow-hidden group flex flex-col">
+                        <div class="h-48 bg-[#111] border-b border-white/5 relative overflow-hidden flex items-center justify-center shrink-0">
+                            <!-- Mockup abstrato -->
+                            <div class="w-[80%] h-[70%] bg-dark-800 rounded-t-lg border-t border-x border-white/10 flex flex-col p-2 transform group-hover:scale-105 transition-transform duration-500">
+                                <div class="w-full h-2 bg-white/5 rounded-full mb-2"></div>
+                                <div class="w-3/4 h-2 bg-white/5 rounded-full mb-4"></div>
+                                <div class="flex gap-2 h-full">
+                                    <div class="w-1/3 h-full bg-brand-500/20 rounded"></div>
+                                    <div class="w-2/3 h-full bg-white/5 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <span class="text-xs font-semibold text-brand-500 mb-2 block tracking-wider">E-COMMERCE & INTEGRAÇÕES</span>
+                            <h4 class="text-xl font-bold text-white mb-3">Loja Virtual Premium</h4>
+                            <p class="text-sm text-zinc-400 font-light leading-relaxed mb-4">
+                                Desenvolvimento completo de uma plataforma focada em alta conversão. Arquitetura construída para suportar picos de acessos em datas comemorativas sem quedas. Inclui checkout transparente otimizado, cálculo de frete dinâmico e um painel administrativo integrado diretamente ao estoque físico do cliente.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="premium-card rounded-2xl overflow-hidden group flex flex-col">
+                        <div class="h-48 bg-[#111] border-b border-white/5 relative overflow-hidden flex items-center justify-center shrink-0">
+                            <div class="w-[80%] h-[70%] bg-dark-800 rounded-t-lg border-t border-x border-white/10 flex flex-col p-2 transform group-hover:scale-105 transition-transform duration-500">
+                                <div class="w-full h-8 bg-brand-500/10 rounded mb-2 flex items-center px-2"><div class="w-4 h-4 rounded-full bg-brand-500/50"></div></div>
+                                <div class="w-full flex-grow bg-white/5 rounded"></div>
+                            </div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <span class="text-xs font-semibold text-brand-500 mb-2 block tracking-wider">SISTEMA WEB (SaaS / ERP)</span>
+                            <h4 class="text-xl font-bold text-white mb-3">Gestão de Processos Internos</h4>
+                            <p class="text-sm text-zinc-400 font-light leading-relaxed mb-4">
+                                Criação de um sistema web desenhado especificamente para digitalizar operações internas. Substituímos dezenas de planilhas desconexas por um painel centralizado em nuvem com permissões de usuários, geração automatizada de relatórios gerenciais e gráficos de performance da equipe em tempo real.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Case 3 -->
+                    <div class="premium-card rounded-2xl overflow-hidden group flex flex-col">
+                        <div class="h-48 bg-[#111] border-b border-white/5 relative overflow-hidden flex items-center justify-center shrink-0">
+                            <div class="w-[80%] h-[70%] bg-dark-800 rounded-t-lg border-t border-x border-white/10 flex flex-col p-4 items-center justify-center transform group-hover:scale-105 transition-transform duration-500">
+                                <div class="w-12 h-12 rounded-full border-4 border-brand-500 border-t-transparent animate-spin mb-4"></div>
+                                <div class="w-1/2 h-2 bg-white/10 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <span class="text-xs font-semibold text-brand-500 mb-2 block tracking-wider">SITE INSTITUCIONAL B2B</span>
+                            <h4 class="text-xl font-bold text-white mb-3">Landing Page de Alta Conversão</h4>
+                            <p class="text-sm text-zinc-400 font-light leading-relaxed mb-4">
+                                Projeto focado agressivamente na captação de leads. Otimização extrema de performance (carregamento em menos de 1 segundo), rastreamento nativo de eventos para campanhas de tráfego pago e um design focado na psicologia do usuário, aumentando as solicitações de orçamento em mais de 150%.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metodologia" class="py-24 relative z-10 border-b border-white/5 bg-[#030303]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 class="text-brand-500 font-semibold tracking-widest uppercase text-xs mb-3">Nosso Processo</h2>
+                        <h3 class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">Não apenas escrevemos código,<br> entregamos resultados.</h3>
+                        <p class="text-zinc-400 mb-10 font-light leading-relaxed">
+                            Aliamos desenvolvimento de ponta com consultoria de implementação. Nós guiamos você em cada etapa para garantir o sucesso do projeto.
+                        </p>
+                        
+                        <div class="space-y-8 border-l border-white/10 pl-6 ml-2">
+                            <div class="relative">
+                                <div class="absolute -left-[33px] top-1 w-4 h-4 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(0,230,91,0.5)]"></div>
+                                <h5 class="text-lg font-semibold text-white mb-1">1. Diagnóstico e Planejamento</h5>
+                                <p class="text-sm text-zinc-500 font-light">Mapeamos as necessidades reais do negócio antes de programar.</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[33px] top-1 w-4 h-4 rounded-full bg-dark-800 border-2 border-brand-500"></div>
+                                <h5 class="text-lg font-semibold text-white mb-1">2. Desenvolvimento Ágil</h5>
+                                <p class="text-sm text-zinc-500 font-light">Entregas rápidas e contínuas para validar se o projeto segue o caminho certo.</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[33px] top-1 w-4 h-4 rounded-full bg-dark-800 border-2 border-brand-500"></div>
+                                <h5 class="text-lg font-semibold text-white mb-1">3. Lançamento e Suporte</h5>
+                                <p class="text-sm text-zinc-500 font-light">Treinamos sua equipe e garantimos o funcionamento perfeito em produção.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full aspect-square md:aspect-[4/3] rounded-2xl bg-dark-900 border border-white/10 p-6 shadow-2xl flex items-center justify-center overflow-hidden group">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-brand-500/10 blur-[80px] pointer-events-none group-hover:bg-brand-500/20 transition-all duration-700"></div>
+                        
+                        <!-- UI Abstrata -->
+                        <div class="w-full h-full bg-[#0a0a0a] border border-white/5 rounded-xl flex flex-col overflow-hidden relative z-10 shadow-2xl">
+                            <div class="h-10 border-b border-white/5 flex items-center px-4 gap-2 bg-[#111]">
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col gap-6">
+                                <div class="w-full h-24 bg-gradient-to-t from-brand-500/10 to-transparent border-b border-brand-500/30 rounded-t-lg flex items-end px-2 gap-2 pb-0 pt-4">
+                                    <div class="w-full bg-brand-500/40 rounded-t-sm h-[30%]"></div>
+                                    <div class="w-full bg-brand-500/60 rounded-t-sm h-[50%]"></div>
+                                    <div class="w-full bg-brand-500/30 rounded-t-sm h-[40%]"></div>
+                                    <div class="w-full bg-brand-500 rounded-t-sm h-[90%] shadow-[0_0_15px_rgba(0,230,91,0.5)] relative"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 flex-grow">
+                                    <div class="border border-white/5 bg-[#111] rounded-lg p-4"><div class="w-3/4 h-2 bg-white/10 rounded-full mb-3"></div></div>
+                                    <div class="border border-white/5 bg-[#111] rounded-lg p-4"><div class="w-3/4 h-2 bg-white/10 rounded-full mb-3"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="py-24 relative z-10">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-brand-500 font-semibold tracking-widest uppercase text-xs mb-3">Dúvidas Comuns</h2>
+                    <h3 class="text-white text-3xl font-bold tracking-tight mb-4">Perguntas Frequentes</h3>
+                    <p class="text-zinc-400 font-light">Transparência total sobre como trabalhamos e entregamos.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Pergunta 1 -->
+                    <div class="faq-item premium-card rounded-xl border border-white/10 overflow-hidden cursor-pointer" onclick="this.classList.toggle('active')">
+                        <div class="p-5 md:p-6 flex justify-between items-center text-white font-medium text-base md:text-lg">
+                            Vocês ajudam a definir o que meu projeto precisa?
+                            <i data-lucide="chevron-down" class="w-5 h-5 faq-icon transition-transform text-brand-500 flex-shrink-0 ml-4"></i>
+                        </div>
+                        <div class="faq-answer bg-white/5 px-5 md:px-6 text-zinc-400 text-sm md:text-base font-light">
+                            <p class="pb-6 leading-relaxed">
+                                Absolutamente. A maioria dos clientes chega até nós apenas com um problema de negócios ou uma ideia abrangente. Na nossa etapa inicial de Diagnóstico, atuamos como consultores de tecnologia: mapeamos os processos da sua empresa, identificamos os gargalos operacionais e propomos a arquitetura exata para resolver essas dores. Nossa meta é desenvolver o essencial para gerar resultado, sem funcionalidades supérfluas que apenas encareceriam o projeto.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 2 -->
+                    <div class="faq-item premium-card rounded-xl border border-white/10 overflow-hidden cursor-pointer" onclick="this.classList.toggle('active')">
+                        <div class="p-5 md:p-6 flex justify-between items-center text-white font-medium text-base md:text-lg">
+                            Quanto tempo demora para um site ou sistema ficar pronto?
+                            <i data-lucide="chevron-down" class="w-5 h-5 faq-icon transition-transform text-brand-500 flex-shrink-0 ml-4"></i>
+                        </div>
+                        <div class="faq-answer bg-white/5 px-5 md:px-6 text-zinc-400 text-sm md:text-base font-light">
+                            <p class="pb-6 leading-relaxed">
+                                O prazo está diretamente ligado à complexidade do escopo. Sites institucionais e Landing Pages focadas em conversão costumam ser lançados entre <strong>2 a 4 semanas</strong>. Já sistemas sob medida, plataformas SaaS ou E-commerces integrados levam de <strong>1 a 3 meses</strong>. Trabalhamos com uma metodologia ágil, onde você recebe entregas parciais a cada 15 dias, permitindo validar o software e acompanhar de perto enquanto ele ainda está sendo construído.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 3 -->
+                    <div class="faq-item premium-card rounded-xl border border-white/10 overflow-hidden cursor-pointer" onclick="this.classList.toggle('active')">
+                        <div class="p-5 md:p-6 flex justify-between items-center text-white font-medium text-base md:text-lg">
+                            Meu site antigo está lento e desatualizado. Vocês realizam a migração?
+                            <i data-lucide="chevron-down" class="w-5 h-5 faq-icon transition-transform text-brand-500 flex-shrink-0 ml-4"></i>
+                        </div>
+                        <div class="faq-answer bg-white/5 px-5 md:px-6 text-zinc-400 text-sm md:text-base font-light">
+                            <p class="pb-6 leading-relaxed">
+                                Sim. Se você já possui uma operação rodando, fazemos a transição de forma extremamente cuidadosa. Planejamos o redirecionamento das suas URLs atuais para que você <strong>não perca seu ranqueamento no Google (SEO)</strong>, migramos seu banco de dados com máxima segurança e agendamos a virada de servidor para horários de baixo pico (como madrugadas). O objetivo é que seus clientes não sintam nenhuma instabilidade durante a troca.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 4 -->
+                    <div class="faq-item premium-card rounded-xl border border-white/10 overflow-hidden cursor-pointer" onclick="this.classList.toggle('active')">
+                        <div class="p-5 md:p-6 flex justify-between items-center text-white font-medium text-base md:text-lg">
+                            Como funciona a manutenção após a entrega?
+                            <i data-lucide="chevron-down" class="w-5 h-5 faq-icon transition-transform text-brand-500 flex-shrink-0 ml-4"></i>
+                        </div>
+                        <div class="faq-answer bg-white/5 px-5 md:px-6 text-zinc-400 text-sm md:text-base font-light">
+                            <p class="pb-6 leading-relaxed">
+                                Não abandonamos o seu projeto após o lançamento. Oferecemos contratos de Manutenção Sustentada que incluem monitoramento ativo de servidores, aplicação de patches de segurança constantes, realização de backups automatizados e uma franquia de horas para você solicitar novas melhorias e evolução contínua da ferramenta, sem burocracia.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 5 -->
+                    <div class="faq-item premium-card rounded-xl border border-white/10 overflow-hidden cursor-pointer" onclick="this.classList.toggle('active')">
+                        <div class="p-5 md:p-6 flex justify-between items-center text-white font-medium text-base md:text-lg">
+                            Preciso pagar hospedagem e domínio separados?
+                            <i data-lucide="chevron-down" class="w-5 h-5 faq-icon transition-transform text-brand-500 flex-shrink-0 ml-4"></i>
+                        </div>
+                        <div class="faq-answer bg-white/5 px-5 md:px-6 text-zinc-400 text-sm md:text-base font-light">
+                            <p class="pb-6 leading-relaxed">
+                                O setup inicial de infraestrutura em nuvem (como AWS, Vercel ou Servidores Dedicados) já está incluso na nossa prestação de serviço. No entanto, os custos recorrentes mensais/anuais de servidores e a propriedade do domínio (ex: suaempresa.com.br) ficam no seu nome e são pagos diretamente às plataformas de hospedagem. Garantimos total transparência para que você tenha controle absoluto e propriedade total sobre os ativos digitais do seu negócio.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 relative z-10 border-t border-white/5 bg-[#050505]">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="premium-card rounded-3xl p-10 md:p-20 text-center relative overflow-hidden">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-brand-500/10 filter blur-[100px] pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">Pronto para digitalizar seu negócio?</h2>
+                        <p class="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto font-light">
+                            Entre em contato conosco hoje mesmo e vamos construir a solução ideal para as necessidades da sua empresa.
+                        </p>
+                        <a href="#" onclick="window.open(WHATSAPP_URL, '_blank')" class="inline-flex items-center justify-center gap-3 btn-primary px-10 py-5 rounded-xl font-bold text-lg">
+                            <i data-lucide="rocket" class="w-5 h-5"></i>
+                            Falar com um Desenvolvedor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="relative z-10 border-t border-white/5 bg-[#020202]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="col-span-1 md:col-span-1">
+                    <span class="text-2xl font-bold tracking-tighter text-white block mb-4">
+                        BAEV<span class="text-brand-500">/</span> Dev.
+                    </span>
+                    <p class="text-zinc-500 text-sm leading-relaxed font-light mb-6">
+                        Soluções web inteligentes, do site simples ao sistema de gestão completo. Foco em pequenos e médios negócios.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-6 text-sm uppercase tracking-widest">Links Rápidos</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#servicos" class="text-zinc-500 hover:text-brand-400 transition-colors">Nossos Serviços</a></li>
+                        <li><a href="#portfolio" class="text-zinc-500 hover:text-brand-400 transition-colors">Portfólio</a></li>
+                        <li><a href="#faq" class="text-zinc-500 hover:text-brand-400 transition-colors">Dúvidas Frequentes</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-6 text-sm uppercase tracking-widest">Contato</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li>
+                            <a href="/cdn-cgi/l/email-protection#5e3d31302a3f2a311e3c3f3b283a3b28703d3133703c2c" class="text-zinc-500 hover:text-white transition-colors flex items-center gap-3">
+                                <i data-lucide="mail" class="w-4 h-4 text-brand-500"></i> <span class="__cf_email__" data-cfemail="04676b6a7065706b44666561726061722a676b692a6676">[email&#160;protected]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="window.open(WHATSAPP_URL, '_blank')" class="text-zinc-500 hover:text-white transition-colors flex items-center gap-3">
+                                <i data-lucide="phone" class="w-4 h-4 text-brand-500"></i> WhatsApp: (11) 9999-9999
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/5 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-zinc-600">
+                <p>&copy; <span id="year"></span> BAEV/ Dev. Todos os direitos reservados.</p>
+                <p class="mt-2 md:mt-0">Design Minimalista & Alta Performance.</p>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" onclick="window.open(WHATSAPP_URL, '_blank')" class="fixed bottom-6 right-6 md:bottom-10 md:right-10 bg-[#25D366] text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:bg-[#1ebd5a] hover:scale-110 transition-all duration-300 z-50 whatsapp-float flex items-center justify-center group" aria-label="Fale conosco no WhatsApp">
+        <i data-lucide="message-square" class="w-7 h-7"></i>
+    </a>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Aguarda a página carregar completamente antes de rodar os scripts de ícones
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar ícones Lucide com verificação de segurança
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            // Atualizar ano do copyright
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // Menu Mobile Toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            
+            if(btn && menu) {
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                });
+                
+                const links = menu.querySelectorAll('a');
+                links.forEach(link => {
+                    link.addEventListener('click', () => {
+                        menu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
