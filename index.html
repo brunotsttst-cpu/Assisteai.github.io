@@ -5,6 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assiste/Ai - Catálogo</title>
     
+    <!-- Configurações para WebApp / PWA -->
+    <meta name="theme-color" content="#141414">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BAEV/FLIX">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/E50914/FFFFFF?text=BAEV">
+
+    <!-- Gerador Dinâmico de Manifest e Service Worker -->
+    <script>
+        (function() {
+            // 1. Criar e injetar o manifest.json dinamicamente
+            const manifestData = {
+                name: "Assiste/Ai - Filmes e Séries",
+                short_name: "Assiste Ai",
+                description: "Catálogo completo de filmes, séries e animes online.",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#141414",
+                theme_color: "#E50914",
+                orientation: "portrait-primary",
+                icons: [
+                    {
+                        src: "https://placehold.co/192x192/E50914/FFFFFF?text=BAEV",
+                        sizes: "192x192",
+                        type: "image/png",
+                        purpose: "any maskable"
+                    },
+                    {
+                        src: "https://placehold.co/512x512/E50914/FFFFFF?text=BAEV",
+                        sizes: "512x512",
+                        type: "image/png",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+            const stringManifest = JSON.stringify(manifestData);
+            const blobManifest = new Blob([stringManifest], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(blobManifest);
+            
+            const linkManifest = document.createElement('link');
+            linkManifest.rel = 'manifest';
+            linkManifest.href = manifestUrl;
+            document.head.appendChild(linkManifest);
+
+            // 2. Criar e registrar o Service Worker dinamicamente usando Data URL (Base64)
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'baevflix-v1';
+                    const ASSETS_TO_CACHE = [
+                        './',
+                        'https://cdn.tailwindcss.com',
+                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+                        'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
+                    ];
+
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then((cache) => {
+                                return cache.addAll(ASSETS_TO_CACHE);
+                            }).catch(() => {})
+                        );
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(
+                            caches.keys().then((keys) => {
+                                return Promise.all(
+                                    keys.map((key) => {
+                                        if (key !== CACHE_NAME) return caches.delete(key);
+                                    })
+                                );
+                            })
+                        );
+                        self.clients.claim();
+                    });
+
+                    self.addEventListener('fetch', (e) => {
+                        if (e.request.method !== 'GET') return;
+                        e.respondWith(
+                            caches.match(e.request).then((cachedResponse) => {
+                                if (cachedResponse) return cachedResponse;
+                                return fetch(e.request).catch(() => cachedResponse);
+                            })
+                        );
+                    });
+                `;
+                
+                // Converte o código para Data URL Base64 para evitar bloqueio do protocolo Blob
+                const swDataUrl = 'data:text/javascript;base64,' + btoa(swCode);
+
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register(swDataUrl)
+                        .then(reg => console.log('Service Worker PWA Registrado com sucesso!'))
+                        .catch(err => {
+                            console.warn('Registro de Service Worker não permitido neste domínio/iframe:', err.message);
+                        });
+                });
+            }
+        })();
+    </script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -181,11 +283,11 @@
                 <p class="font-semibold text-gray-300 mb-1 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-shield-halved text-netflix-red"></i> Aviso de Isenção de Responsabilidade
                 </p>
-                O site <strong class="text-gray-300">BAEV/FLIX</strong> funciona exclusivamente como um indexador e agregador automático de links de vídeos disponíveis publicamente na internet. Nenhum arquivo de vídeo, imagem ou mídia está hospedado em nossos servidores. Todos os conteúdos exibidos são de responsabilidade exclusiva de seus respectivos hospedadores e plataformas de terceiros.
+                O site <strong class="text-gray-300">Assiste/Ai</strong> funciona exclusivamente como um indexador e agregador automático de links de vídeos disponíveis publicamente na internet. Nenhum arquivo de vídeo, imagem ou mídia está hospedado em nossos servidores. Todos os conteúdos exibidos são de responsabilidade exclusiva de seus respectivos hospedadores e plataformas de terceiros.
             </div>
 
             <p class="text-gray-500 text-sm">
-                &copy; 2026 BAEV/FLIX. Desenvolvido em integração com a <a href="https://embedmovies.org" target="_blank" class="hover:text-white transition-colors">EmbedMovies</a>.
+                &copy; 2026 Assiste/Ai. Desenvolvido em integração com a <a href="https://embedmovies.org" target="_blank" class="hover:text-white transition-colors">EmbedMovies</a>.
             </p>
         </div>
     </footer>
